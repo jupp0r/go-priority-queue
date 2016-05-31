@@ -25,3 +25,56 @@ func TestPriorityQueue(t *testing.T) {
 		}
 	}
 }
+
+func TestPriorityQueueUpdate(t *testing.T) {
+	pq := New()
+	pq.Insert("foo", 3)
+	pq.Insert("bar", 4)
+	pq.UpdatePriority("bar", 2)
+
+	item, err := pq.Pop()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if item.(string) != "bar" {
+		t.Fatal("priority update failed")
+	}
+}
+
+func TestPriorityQueueLen(t *testing.T) {
+	pq := New()
+	if pq.Len() != 0 {
+		t.Fatal("empty queue should have length of 0")
+	}
+
+	pq.Insert("foo", 1)
+	pq.Insert("bar", 1)
+	if pq.Len() != 2 {
+		t.Fatal("queue should have lenght of 2 after 2 inserts")
+	}
+}
+
+func TestDoubleAddition(t *testing.T) {
+	pq := New()
+	pq.Insert("foo", 2)
+	pq.Insert("bar", 3)
+	pq.Insert("bar", 1)
+
+	if pq.Len() != 2 {
+		t.Fatal("queue should ignore inserting the same element twice")
+	}
+
+	item, _ := pq.Pop()
+	if item.(string) != "foo" {
+		t.Fatal("queue should ignore duplicate insert, not update existing item")
+	}
+}
+
+func TestPopEmptyQueue(t *testing.T) {
+	pq := New()
+	_, err := pq.Pop()
+	if err == nil {
+		t.Fatal("should produce error when performing pop on empty queue")
+	}
+}

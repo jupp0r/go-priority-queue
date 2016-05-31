@@ -1,3 +1,9 @@
+// Package pq implements a priority queue data structure on top of container/heap.
+// As an addition to regular operations, it allows an update of an items priority,
+// allowing the queue to be used in graph search algorithms like Dijkstra's algorithm.
+// Computational complexities of operations are mainly determined by container/heap.
+// In addition, a map of items is maintained, allowing O(1) lookup needed for priority updates,
+// which themselves are O(log n).
 package pq
 
 import (
@@ -5,18 +11,13 @@ import (
 	"errors"
 )
 
-// PriorityQueue implements a priority queue data structure on top of container/heap.
-// As an addition to regular operations, it allows an update of an items priority,
-// allowing the queue to be used in graph search algorithms like Dijkstra's algorithm.
-// Computational complexities of operations are mainly determined by container/heap.
-// In addition, a map of items is maintained, allowing O(1) lookup needed for priority updates,
-// which themselves are O(log n).
+// PriorityQueue represents the queue
 type PriorityQueue struct {
 	itemHeap *itemHeap
 	lookup   map[interface{}]*item
 }
 
-// NewPQ initializes an empty priority queue.
+// New initializes an empty priority queue.
 func New() PriorityQueue {
 	return PriorityQueue{
 		itemHeap: &itemHeap{},
