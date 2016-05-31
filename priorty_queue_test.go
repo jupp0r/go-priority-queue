@@ -78,3 +78,19 @@ func TestPopEmptyQueue(t *testing.T) {
 		t.Fatal("should produce error when performing pop on empty queue")
 	}
 }
+
+func TestUpdateNonExistingItem(t *testing.T) {
+	pq := New()
+
+	pq.Insert("foo", 4)
+	pq.UpdatePriority("bar", 5)
+
+	if pq.Len() != 1 {
+		t.Fatal("update should not add items")
+	}
+
+	item, _ := pq.Pop()
+	if item.(string) != "foo" {
+		t.Fatalf("update should not overwrite item, expected \"foo\", got \"%v\"", item.(string))
+	}
+}
