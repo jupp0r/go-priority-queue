@@ -1,12 +1,14 @@
-package pq
+package pq_test
 
 import (
 	"sort"
 	"testing"
+
+	lib "quantime.ai/go-priority-queue/lib/pq"
 )
 
 func TestPriorityQueue(t *testing.T) {
-	pq := New()
+	pq := lib.New()
 	elements := []float64{5, 3, 7, 8, 6, 2, 9}
 	for _, e := range elements {
 		pq.Insert(e, e)
@@ -27,7 +29,7 @@ func TestPriorityQueue(t *testing.T) {
 }
 
 func TestPriorityQueueUpdate(t *testing.T) {
-	pq := New()
+	pq := lib.New()
 	pq.Insert("foo", 3)
 	pq.Insert("bar", 4)
 	pq.UpdatePriority("bar", 2)
@@ -43,7 +45,7 @@ func TestPriorityQueueUpdate(t *testing.T) {
 }
 
 func TestPriorityQueueLen(t *testing.T) {
-	pq := New()
+	pq := lib.New()
 	if pq.Len() != 0 {
 		t.Fatal("empty queue should have length of 0")
 	}
@@ -56,7 +58,7 @@ func TestPriorityQueueLen(t *testing.T) {
 }
 
 func TestDoubleAddition(t *testing.T) {
-	pq := New()
+	pq := lib.New()
 	pq.Insert("foo", 2)
 	pq.Insert("bar", 3)
 	pq.Insert("bar", 1)
@@ -72,7 +74,7 @@ func TestDoubleAddition(t *testing.T) {
 }
 
 func TestPopEmptyQueue(t *testing.T) {
-	pq := New()
+	pq := lib.New()
 	_, err := pq.Pop()
 	if err == nil {
 		t.Fatal("should produce error when performing pop on empty queue")
@@ -80,7 +82,7 @@ func TestPopEmptyQueue(t *testing.T) {
 }
 
 func TestUpdateNonExistingItem(t *testing.T) {
-	pq := New()
+	pq := lib.New()
 
 	pq.Insert("foo", 4)
 	pq.UpdatePriority("bar", 5)
