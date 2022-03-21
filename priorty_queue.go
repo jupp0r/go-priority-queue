@@ -12,32 +12,32 @@ import (
 )
 
 // PriorityQueue represents the queue
-type PriorityQueue struct {
-	itemHeap *itemHeap
-	lookup   map[interface{}]*item
+type PriorityQueue[T any] struct {
+	itemHeap *itemHeap[T]
+	lookup   map[interface{}]*item[T]
 }
 
 // New initializes an empty priority queue.
-func New() PriorityQueue {
-	return PriorityQueue{
-		itemHeap: &itemHeap{},
-		lookup:   make(map[interface{}]*item),
+func New[T any]() PriorityQueue[T] {
+	return PriorityQueue[T]{
+		itemHeap: &itemHeap[T]{},
+		lookup:   make(map[interface{}]*item[T]),
 	}
 }
 
 // Len returns the number of elements in the queue.
-func (p *PriorityQueue) Len() int {
+func (p *PriorityQueue[T]) Len() int {
 	return p.itemHeap.Len()
 }
 
 // Insert inserts a new element into the queue. No action is performed on duplicate elements.
-func (p *PriorityQueue) Insert(v interface{}, priority float64) {
+func (p *PriorityQueue[T]) Insert(v T, priority float64) {
 	_, ok := p.lookup[v]
 	if ok {
 		return
 	}
 
-	newItem := &item{
+	newItem := &item[T]{
 		value:    v,
 		priority: priority,
 	}
@@ -47,19 +47,20 @@ func (p *PriorityQueue) Insert(v interface{}, priority float64) {
 
 // Pop removes the element with the highest priority from the queue and returns it.
 // In case of an empty queue, an error is returned.
-func (p *PriorityQueue) Pop() (interface{}, error) {
+func (p *PriorityQueue[T]) Pop() (T, error) {
 	if len(*p.itemHeap) == 0 {
-		return nil, errors.New("empty queue")
+		var zeroVal T
+		return zeroVal, errors.New("empty queue")
 	}
 
-	item := heap.Pop(p.itemHeap).(*item)
+	item := heap.Pop(p.itemHeap).(*item[T])
 	delete(p.lookup, item.value)
 	return item.value, nil
 }
 
 // UpdatePriority changes the priority of a given item.
 // If the specified item is not present in the queue, no action is performed.
-func (p *PriorityQueue) UpdatePriority(x interface{}, newPriority float64) {
+func (p *PriorityQueue[T]) UpdatePriority(x T, newPriority float64) {
 	item, ok := p.lookup[x]
 	if !ok {
 		return
@@ -69,35 +70,35 @@ func (p *PriorityQueue) UpdatePriority(x interface{}, newPriority float64) {
 	heap.Fix(p.itemHeap, item.index)
 }
 
-type itemHeap []*item
+type itemHeap[T any] []*item[T]
 
-type item struct {
-	value    interface{}
+type item[T any] struct {
+	value    T
 	priority float64
 	index    int
 }
 
-func (ih *itemHeap) Len() int {
+func (ih *itemHeap[T]) Len() int {
 	return len(*ih)
 }
 
-func (ih *itemHeap) Less(i, j int) bool {
+func (ih *itemHeap[T]) Less(i, j int) bool {
 	return (*ih)[i].priority < (*ih)[j].priority
 }
 
-func (ih *itemHeap) Swap(i, j int) {
+func (ih *itemHeap[T]) Swap(i, j int) {
 	(*ih)[i], (*ih)[j] = (*ih)[j], (*ih)[i]
 	(*ih)[i].index = i
 	(*ih)[j].index = j
 }
 
-func (ih *itemHeap) Push(x interface{}) {
-	it := x.(*item)
+func (ih *itemHeap[T]) Push(x interface{}) {
+	it := x.(*item[T])
 	it.index = len(*ih)
 	*ih = append(*ih, it)
 }
 
-func (ih *itemHeap) Pop() interface{} {
+func (ih *itemHeap[T]) Pop() interface{} {
 	old := *ih
 	item := old[len(old)-1]
 	*ih = old[0 : len(old)-1]

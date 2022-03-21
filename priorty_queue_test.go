@@ -6,7 +6,7 @@ import (
 )
 
 func TestPriorityQueue(t *testing.T) {
-	pq := New()
+	pq := New[float64]()
 	elements := []float64{5, 3, 7, 8, 6, 2, 9}
 	for _, e := range elements {
 		pq.Insert(e, e)
@@ -19,7 +19,7 @@ func TestPriorityQueue(t *testing.T) {
 			t.Fatalf(err.Error())
 		}
 
-		i := item.(float64)
+		i := item
 		if e != i {
 			t.Fatalf("expected %v, got %v", e, i)
 		}
@@ -27,7 +27,7 @@ func TestPriorityQueue(t *testing.T) {
 }
 
 func TestPriorityQueueUpdate(t *testing.T) {
-	pq := New()
+	pq := New[string]()
 	pq.Insert("foo", 3)
 	pq.Insert("bar", 4)
 	pq.UpdatePriority("bar", 2)
@@ -37,13 +37,13 @@ func TestPriorityQueueUpdate(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	if item.(string) != "bar" {
+	if item != "bar" {
 		t.Fatal("priority update failed")
 	}
 }
 
 func TestPriorityQueueLen(t *testing.T) {
-	pq := New()
+	pq := New[string]()
 	if pq.Len() != 0 {
 		t.Fatal("empty queue should have length of 0")
 	}
@@ -56,7 +56,7 @@ func TestPriorityQueueLen(t *testing.T) {
 }
 
 func TestDoubleAddition(t *testing.T) {
-	pq := New()
+	pq := New[string]()
 	pq.Insert("foo", 2)
 	pq.Insert("bar", 3)
 	pq.Insert("bar", 1)
@@ -66,13 +66,13 @@ func TestDoubleAddition(t *testing.T) {
 	}
 
 	item, _ := pq.Pop()
-	if item.(string) != "foo" {
+	if item != "foo" {
 		t.Fatal("queue should ignore duplicate insert, not update existing item")
 	}
 }
 
 func TestPopEmptyQueue(t *testing.T) {
-	pq := New()
+	pq := New[any]()
 	_, err := pq.Pop()
 	if err == nil {
 		t.Fatal("should produce error when performing pop on empty queue")
@@ -80,7 +80,7 @@ func TestPopEmptyQueue(t *testing.T) {
 }
 
 func TestUpdateNonExistingItem(t *testing.T) {
-	pq := New()
+	pq := New[string]()
 
 	pq.Insert("foo", 4)
 	pq.UpdatePriority("bar", 5)
@@ -90,7 +90,7 @@ func TestUpdateNonExistingItem(t *testing.T) {
 	}
 
 	item, _ := pq.Pop()
-	if item.(string) != "foo" {
-		t.Fatalf("update should not overwrite item, expected \"foo\", got \"%v\"", item.(string))
+	if item != "foo" {
+		t.Fatalf("update should not overwrite item, expected \"foo\", got \"%v\"", item)
 	}
 }
