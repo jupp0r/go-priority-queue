@@ -1,6 +1,7 @@
 package pq
 
 import (
+	"math"
 	"sort"
 	"testing"
 )
@@ -55,6 +56,22 @@ func TestPriorityQueueLen(t *testing.T) {
 	}
 }
 
+func TestItemHeapLess(t *testing.T) {
+	h := itemHeap[int]{
+		&item[int]{priority: math.Inf(1)},
+		&item[int]{priority: math.Inf(1)},
+		&item[int]{priority: math.Inf(-1)},
+		&item[int]{priority: math.Inf(-1)},
+	}
+
+	// test all pairwise elements: 0,1 then 2,3 then...
+	for i := 0; i < len(h); i += 2 {
+		if h.Less(i, i+1) {
+			t.Fatalf("%v should not have less priority than %v", h[i], h[i+1])
+		}
+	}
+}
+
 func TestDoubleAddition(t *testing.T) {
 	pq := New[string]()
 	pq.Insert("foo", 2)
@@ -72,10 +89,12 @@ func TestDoubleAddition(t *testing.T) {
 }
 
 func TestPopEmptyQueue(t *testing.T) {
-	pq := New[any]()
+	pq := New[float32]()
 	_, err := pq.Pop()
 	if err == nil {
 		t.Fatal("should produce error when performing pop on empty queue")
+	} else if err != ErrEmptyQueue {
+		t.Fatalf("error should be equal to %v, got %v", ErrEmptyQueue, err)
 	}
 }
 

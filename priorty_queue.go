@@ -11,17 +11,19 @@ import (
 	"errors"
 )
 
-// PriorityQueue represents the queue
-type PriorityQueue[T any] struct {
+var ErrEmptyQueue = errors.New("empty queue")
+
+// PriorityQueue[T] represents the queue of comparable type T.
+type PriorityQueue[T comparable] struct {
 	itemHeap *itemHeap[T]
-	lookup   map[interface{}]*item[T]
+	lookup   map[T]*item[T]
 }
 
-// New initializes an empty priority queue.
-func New[T any]() PriorityQueue[T] {
+// New[T] initializes an empty priority queue of type T.
+func New[T comparable]() PriorityQueue[T] {
 	return PriorityQueue[T]{
 		itemHeap: &itemHeap[T]{},
-		lookup:   make(map[interface{}]*item[T]),
+		lookup:   make(map[T]*item[T]),
 	}
 }
 
@@ -32,8 +34,7 @@ func (p *PriorityQueue[T]) Len() int {
 
 // Insert inserts a new element into the queue. No action is performed on duplicate elements.
 func (p *PriorityQueue[T]) Insert(v T, priority float64) {
-	_, ok := p.lookup[v]
-	if ok {
+	if _, ok := p.lookup[v]; ok {
 		return
 	}
 
@@ -50,7 +51,7 @@ func (p *PriorityQueue[T]) Insert(v T, priority float64) {
 func (p *PriorityQueue[T]) Pop() (T, error) {
 	if len(*p.itemHeap) == 0 {
 		var zeroVal T
-		return zeroVal, errors.New("empty queue")
+		return zeroVal, ErrEmptyQueue
 	}
 
 	item := heap.Pop(p.itemHeap).(*item[T])
@@ -70,9 +71,9 @@ func (p *PriorityQueue[T]) UpdatePriority(x T, newPriority float64) {
 	heap.Fix(p.itemHeap, item.index)
 }
 
-type itemHeap[T any] []*item[T]
+type itemHeap[T comparable] []*item[T]
 
-type item[T any] struct {
+type item[T comparable] struct {
 	value    T
 	priority float64
 	index    int
